@@ -10,6 +10,14 @@ To run locally
 make run
 ```
 
+---
+
+To run in a container (_*Requires a `.env` file in the root to load the environment variables_):
+
+```sh
+make docker-run
+```
+
 ## Dependencies
 
 Use `go install` to get the tools to generate the coverage outputs, dependencies graph and mocks:

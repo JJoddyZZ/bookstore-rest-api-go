@@ -1,9 +1,11 @@
 all: run
 
+# --- local deploy ---
+
 mkdir-output:
 	@mkdir -p output
 
-build:
+build: mkdir-output
 	@clear
 	@echo "Building executable..."
 	@echo
@@ -17,6 +19,45 @@ run: build
 	@echo
 	@./output/bookstore || (echo "terminated with: $$?")
 	@echo
+
+# requires github.com/vektra/mockery
+gen-mocks:
+	@clear
+	@echo "Generating mocks..."
+	@echo
+	mockery --all --dir=internal/controllers --output=internal/controllers/mocks
+	mockery --all --dir=internal/repositories --output=internal/repositories/mocks
+	mockery --all --dir=internal/services --output=internal/services/mocks
+	@echo
+	@echo "Mocks generated"
+	@echo
+
+# --- docker deploy ---
+
+docker-run:
+	@clear
+	@echo "Running server in container..."
+	@echo
+	docker-compose -f docker-compose.yaml build bookstore-api
+	docker-compose -f docker-compose.yaml up
+
+docker-clean:
+	@clear
+	@echo "Running server in container..."
+	@echo
+	docker-compose -f docker-compose.yaml down
+
+docker-reload: docker-clean docker-run
+
+# To fix 'No space left on device' docker issue
+docker-prune:
+	@clear
+	@echo "Running docker clean up..."
+	@echo
+	@docker system prune -f
+	@docker volume prune -f
+
+# --- testing feats ---
 
 test: mkdir-output
 	@clear
@@ -51,16 +92,4 @@ gen-dependencies-graph:
 	@echo
 	@goda graph ./...| dot -Tsvg -o output/graph.svg
 	@echo "Generated output/graph.svg"
-	@echo
-
-# requires github.com/vektra/mockery
-gen-mocks:
-	@clear
-	@echo "Generating mocks..."
-	@echo
-	mockery --all --dir=internal/controllers --output=internal/controllers/mocks
-	mockery --all --dir=internal/repositories --output=internal/repositories/mocks
-	mockery --all --dir=internal/services --output=internal/services/mocks
-	@echo
-	@echo "Mocks generated"
 	@echo
