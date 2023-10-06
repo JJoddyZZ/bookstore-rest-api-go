@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jzavala-globant/bookstore-rest-api-go/internal/models"
+	"github.com/rs/zerolog"
 )
 
 type Repositories interface {
@@ -11,11 +12,13 @@ type Repositories interface {
 }
 
 type bookstore struct {
-	r Repositories
+	log *zerolog.Logger
+	r   Repositories
 }
 
-func NewBookstoreService(r Repositories) *bookstore {
+func NewBookstoreService(r Repositories, log *zerolog.Logger) *bookstore {
 	return &bookstore{
+		log,
 		r,
 	}
 }

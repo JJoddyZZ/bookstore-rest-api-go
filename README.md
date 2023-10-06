@@ -1,6 +1,6 @@
 # bookstore-rest-api-go
 
-An example of an api using Gorilla Mux
+An example of an api using Gorilla Mux and a controller-service-repository pattern.
 
 ## Execute
 
@@ -16,6 +16,12 @@ To run in a container (_*Requires a `.env` file in the root to load the environm
 
 ```sh
 make docker-run
+```
+
+To remove docker deployment:
+
+```sh
+make docker-down
 ```
 
 ## Dependencies

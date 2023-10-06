@@ -41,13 +41,13 @@ docker-run:
 	docker-compose -f docker-compose.yaml build bookstore-api
 	docker-compose -f docker-compose.yaml up
 
-docker-clean:
+docker-down:
 	@clear
 	@echo "Running server in container..."
 	@echo
 	docker-compose -f docker-compose.yaml down
 
-docker-reload: docker-clean docker-run
+docker-reload: docker-down docker-run
 
 # To fix 'No space left on device' docker issue
 docker-prune:

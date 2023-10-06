@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/jzavala-globant/bookstore-rest-api-go/internal/models"
+	"github.com/rs/zerolog"
 )
 
 type Services interface {
@@ -13,11 +14,13 @@ type Services interface {
 }
 
 type bookstore struct {
-	s Services
+	log *zerolog.Logger
+	s   Services
 }
 
-func NewBookstoreController(s Services) *bookstore {
+func NewBookstoreController(s Services, log *zerolog.Logger) *bookstore {
 	return &bookstore{
+		log,
 		s,
 	}
 }
