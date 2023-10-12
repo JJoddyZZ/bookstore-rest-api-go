@@ -10,6 +10,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jzavala-globant/bookstore-rest-api-go/internal/controllers"
+	"github.com/jzavala-globant/bookstore-rest-api-go/internal/infrastructure"
+	"github.com/jzavala-globant/bookstore-rest-api-go/internal/interfaces"
 	"github.com/jzavala-globant/bookstore-rest-api-go/internal/repositories"
 	"github.com/jzavala-globant/bookstore-rest-api-go/internal/services"
 
@@ -21,28 +23,40 @@ const (
 	servicePort  = "8080"
 
 	listBooksPath = "/books"
+	pingPath      = "/ping"
 
 	contentTypeHeaderKey                  = "Content-Type"
 	contentTypeHeaderValueApplicationJSON = "application/json"
 )
 
-type Controllers interface {
-	ListBooks(http.ResponseWriter, *http.Request)
-}
-
 type app struct {
-	c   Controllers
-	log *zerolog.Logger
+	bookstoreController   interfaces.BookstoreController
+	healthCheckController interfaces.HealthCheckController
+	log                   *zerolog.Logger
 }
 
 func StartService() {
 	logger := zerolog.New(os.Stdout)
-	repositories := repositories.NewBookstoreRepository(&logger)
-	services := services.NewBookstoreService(repositories, &logger)
-	controllers := controllers.NewBookstoreController(services, &logger)
+
+	db, err := infrastructure.NewMySQLClient("user", "password", "bookstore")
+	if err != nil {
+		logger.Fatal().Err(err).Msg("error connecting to db")
+	}
+
+	// bookstore
+	bsRepositories := repositories.NewBookstoreRepository(&logger, db)
+	bsServices := services.NewBookstoreService(bsRepositories, &logger)
+	bsController := controllers.NewBookstoreController(bsServices, &logger)
+
+	// healthcheck
+	hcRepositories := repositories.NewPingRepository(&logger, db)
+	hcServices := services.NewPingService(hcRepositories, &logger)
+	hcController := controllers.NewPingController(hcServices, &logger)
+
 	app := &app{
-		c:   controllers,
-		log: &logger,
+		bookstoreController:   bsController,
+		healthCheckController: hcController,
+		log:                   &logger,
 	}
 	app.startServer()
 }
@@ -86,7 +100,8 @@ func (a *app) startServer() {
 }
 
 func (a *app) addRoutes(r *mux.Router) {
-	r.HandleFunc(listBooksPath, a.c.ListBooks).Methods(http.MethodGet)
+	r.HandleFunc(listBooksPath, a.bookstoreController.ListBooks).Methods(http.MethodGet)
+	r.HandleFunc(pingPath, a.healthCheckController.Ping).Methods(http.MethodGet)
 }
 
 func (a *app) addMiddlewares(r *mux.Router) {

@@ -25,9 +25,7 @@ gen-mocks:
 	@clear
 	@echo "Generating mocks..."
 	@echo
-	mockery --all --dir=internal/controllers --output=internal/controllers/mocks
-	mockery --all --dir=internal/repositories --output=internal/repositories/mocks
-	mockery --all --dir=internal/services --output=internal/services/mocks
+	mockery --all --dir=internal/interfaces --output=internal/interfaces/mocks
 	@echo
 	@echo "Mocks generated"
 	@echo
@@ -36,18 +34,24 @@ gen-mocks:
 
 docker-run:
 	@clear
-	@echo "Running server in container..."
+	@echo "Running server and dependencies in container..."
 	@echo
 	docker-compose -f docker-compose.yaml build bookstore-api
-	docker-compose -f docker-compose.yaml up
+	docker-compose -f docker-compose.yaml up || (echo "terminated with: $$?")
 
 docker-down:
 	@clear
-	@echo "Running server in container..."
+	@echo "Shutting down the containers..."
 	@echo
 	docker-compose -f docker-compose.yaml down
 
 docker-reload: docker-down docker-run
+
+docker-deps-run:
+	@clear
+	@echo "Running server and dependencies in container..."
+	@echo
+	docker-compose -f compose.yaml up
 
 # To fix 'No space left on device' docker issue
 docker-prune:

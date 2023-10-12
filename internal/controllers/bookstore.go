@@ -1,31 +1,26 @@
 package controllers
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
-	"github.com/jzavala-globant/bookstore-rest-api-go/internal/models"
+	"github.com/jzavala-globant/bookstore-rest-api-go/internal/interfaces"
 	"github.com/rs/zerolog"
 )
 
-type Services interface {
-	ListBooks(context.Context) (*models.APIResponse, error)
-}
-
-type bookstore struct {
+type bookstoreController struct {
 	log *zerolog.Logger
-	s   Services
+	s   interfaces.BookstoreService
 }
 
-func NewBookstoreController(s Services, log *zerolog.Logger) *bookstore {
-	return &bookstore{
+func NewBookstoreController(s interfaces.BookstoreService, log *zerolog.Logger) *bookstoreController {
+	return &bookstoreController{
 		log,
 		s,
 	}
 }
 
-func (b *bookstore) ListBooks(w http.ResponseWriter, r *http.Request) {
+func (b *bookstoreController) ListBooks(w http.ResponseWriter, r *http.Request) {
 	resp, err := b.s.ListBooks(r.Context())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

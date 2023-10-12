@@ -1,6 +1,6 @@
 # bookstore-rest-api-go
 
-An example of an api using Gorilla Mux and a controller-service-repository pattern.
+An example of an REST api using Gorilla Mux and a controller-service-repository pattern.
 
 ## Execute
 

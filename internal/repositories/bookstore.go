@@ -7,21 +7,22 @@ import (
 	"github.com/rs/zerolog"
 )
 
-type dbClient interface {
+type DBClient interface {
+	Ping() error
 }
 
 type bookstore struct {
 	log *zerolog.Logger
-	db  dbClient
+	db  DBClient
 }
 
-func NewBookstoreRepository(log *zerolog.Logger) *bookstore {
+func NewBookstoreRepository(log *zerolog.Logger, db DBClient) *bookstore {
 	return &bookstore{
-		log: log,
-		db:  nil,
+		log,
+		db,
 	}
 }
 
-func (b *bookstore) ListBooks(ctx context.Context) (*models.Book, error) {
-	return nil, nil
+func (b *bookstore) ListBooks(ctx context.Context) (models.Book, error) {
+	return models.Book{}, nil
 }
