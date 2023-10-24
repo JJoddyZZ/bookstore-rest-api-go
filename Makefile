@@ -53,6 +53,14 @@ docker-deps-run:
 	@echo
 	docker-compose -f compose.yaml up
 
+docker-deps-down:
+	@clear
+	@echo "Running server and dependencies in container..."
+	@echo
+	docker-compose -f compose.yaml down
+
+docker-deps-reload: docker-deps-down docker-deps-run
+
 # To fix 'No space left on device' docker issue
 docker-prune:
 	@clear
@@ -90,7 +98,7 @@ show-coverage-table: test
 	@echo
 
 # requires github.com/loov/goda
-gen-dependencies-graph:
+gen-dependencies-graph: mkdir-output
 	@clear
 	@echo "Generating output/graph.svg..."
 	@echo

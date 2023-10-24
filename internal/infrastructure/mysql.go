@@ -6,14 +6,15 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jzavala-globant/bookstore-rest-api-go/config"
 )
 
 type mysql struct {
 	client *sql.DB
 }
 
-func NewMySQLClient(user, password, dbname string) (*mysql, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s", user, password, dbname)
+func NewMySQLClient(config *config.DB) (*mysql, error) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", config.User, config.Password, config.Host, config.Port, config.Schema)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, err

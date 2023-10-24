@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/jzavala-globant/bookstore-rest-api-go/config"
 	"github.com/jzavala-globant/bookstore-rest-api-go/internal/controllers"
 	"github.com/jzavala-globant/bookstore-rest-api-go/internal/infrastructure"
 	"github.com/jzavala-globant/bookstore-rest-api-go/internal/interfaces"
@@ -20,7 +21,6 @@ import (
 
 const (
 	gracefullTTL = time.Duration(5 * time.Second)
-	servicePort  = "8080"
 
 	listBooksPath = "/books"
 	pingPath      = "/ping"
@@ -38,7 +38,13 @@ type app struct {
 func StartService() {
 	logger := zerolog.New(os.Stdout)
 
-	db, err := infrastructure.NewMySQLClient("user", "password", "bookstore")
+	config, err := config.LoadEnv()
+	if err != nil {
+		logger.Fatal().Err(err).Msg("error loading config")
+	}
+
+	_ = config
+	db, err := infrastructure.NewMySQLClient(config.DB)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("error connecting to db")
 	}
@@ -58,16 +64,16 @@ func StartService() {
 		healthCheckController: hcController,
 		log:                   &logger,
 	}
-	app.startServer()
+	app.startServer(config)
 }
 
-func (a *app) startServer() {
+func (a *app) startServer(config *config.Config) {
 	r := mux.NewRouter()
 	a.addMiddlewares(r)
 	a.addRoutes(r)
 
 	srv := &http.Server{
-		Addr: fmt.Sprintf("0.0.0.0:%s", servicePort),
+		Addr: fmt.Sprintf("%s:%s", config.Server.Address, config.Server.Port),
 		// Good practice to set timeouts to avoid Slowloris attacks
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
@@ -83,7 +89,7 @@ func (a *app) startServer() {
 	}()
 
 	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, os.Kill)
+	signal.Notify(stop, os.Interrupt)
 
 	a.log.Info().Msg("Server up and running!")
 
