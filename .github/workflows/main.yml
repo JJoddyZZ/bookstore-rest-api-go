@@ -10,7 +10,8 @@ on:
 
 env:
     GO_VERSION: 1.19.x
-              
+    TERM: xterm
+
 jobs:
     test:
         runs-on: ubuntu-latest
