@@ -16,5 +16,5 @@ type BookstoreService interface {
 }
 
 type BookstoreRepository interface {
-	ListBooks(context.Context) (models.Book, error)
+	ListBooks(context.Context) ([]models.Book, error)
 }

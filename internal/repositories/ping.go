@@ -3,15 +3,16 @@ package repositories
 import (
 	"fmt"
 
+	"github.com/jzavala-globant/bookstore-rest-api-go/internal/interfaces"
 	"github.com/rs/zerolog"
 )
 
 type ping struct {
 	log *zerolog.Logger
-	db  DBClient
+	db  interfaces.DBClient
 }
 
-func NewPingRepository(log *zerolog.Logger, db DBClient) *ping {
+func NewPingRepository(log *zerolog.Logger, db interfaces.DBClient) *ping {
 	return &ping{
 		log,
 		db,

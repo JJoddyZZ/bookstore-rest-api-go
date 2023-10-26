@@ -20,6 +20,14 @@ func NewBookstoreService(r interfaces.BookstoreRepository, log *zerolog.Logger) 
 	}
 }
 
-func (b *bookstore) ListBooks(context.Context) (models.APIResponse, error) {
-	return models.APIResponse{}, nil
+func (b *bookstore) ListBooks(ctx context.Context) (models.APIResponse, error) {
+	var res models.APIResponse
+
+	books, err := b.r.ListBooks(ctx)
+	if err != nil {
+		return res, err
+	}
+
+	res.Body = books
+	return res, nil
 }

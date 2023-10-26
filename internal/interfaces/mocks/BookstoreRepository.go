@@ -16,18 +16,20 @@ type BookstoreRepository struct {
 }
 
 // ListBooks provides a mock function with given fields: _a0
-func (_m *BookstoreRepository) ListBooks(_a0 context.Context) (models.Book, error) {
+func (_m *BookstoreRepository) ListBooks(_a0 context.Context) ([]models.Book, error) {
 	ret := _m.Called(_a0)
 
-	var r0 models.Book
+	var r0 []models.Book
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context) (models.Book, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) ([]models.Book, error)); ok {
 		return rf(_a0)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context) models.Book); ok {
+	if rf, ok := ret.Get(0).(func(context.Context) []models.Book); ok {
 		r0 = rf(_a0)
 	} else {
-		r0 = ret.Get(0).(models.Book)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Book)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context) error); ok {

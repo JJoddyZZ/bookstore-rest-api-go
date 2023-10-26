@@ -23,10 +23,11 @@ func NewBookstoreController(s interfaces.BookstoreService, log *zerolog.Logger) 
 func (b *bookstoreController) ListBooks(w http.ResponseWriter, r *http.Request) {
 	resp, err := b.s.ListBooks(r.Context())
 	if err != nil {
+		b.log.Err(err).Msg("error fetching books")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	json.NewEncoder(w).Encode(resp.Body)
 }

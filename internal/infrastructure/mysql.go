@@ -7,10 +7,15 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jzavala-globant/bookstore-rest-api-go/config"
+	"github.com/jzavala-globant/bookstore-rest-api-go/internal/interfaces"
 )
 
 type mysql struct {
 	client *sql.DB
+}
+
+type row struct {
+	rows *sql.Rows
 }
 
 func NewMySQLClient(config *config.DB) (*mysql, error) {
@@ -31,4 +36,35 @@ func NewMySQLClient(config *config.DB) (*mysql, error) {
 
 func (m *mysql) Ping() error {
 	return m.client.Ping()
+}
+
+func (m *mysql) Query(query string) (interfaces.DBRow, error) {
+	rows, err := m.client.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	// defer rows.Close()
+
+	res := &row{
+		rows: rows,
+	}
+
+	return res, nil
+}
+
+func (m *mysql) Execute(statement string) {
+	m.client.Exec(statement)
+}
+
+func (r *row) Scan(dest ...interface{}) error {
+	err := r.rows.Scan(dest...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *row) Next() bool {
+	return r.rows.Next()
 }
