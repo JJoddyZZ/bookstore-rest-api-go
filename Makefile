@@ -1,5 +1,13 @@
 all: run
 
+# --- dependencies for local development ---
+
+local-setup:
+	go install github.com/vektra/mockery/v2@v2.35.4
+	go install github.com/loov/goda@latest
+	go install github.com/nikolaydubina/go-cover-treemap@latest
+	go install github.com/gojekfarm/go-coverage@latest
+
 # --- local deploy ---
 
 mkdir-output:

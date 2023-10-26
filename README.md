@@ -26,7 +26,13 @@ make docker-down
 
 ## Dependencies
 
-Use `go install` to get the tools to generate the coverage outputs, dependencies graph and mocks:
+Execute to get the tools to generate the coverage outputs, dependencies graph and mocks:
+
+```sh
+make local-setup
+```
+
+It installs:
 
 - [**mockery**: to auto generate mocks](https://github.com/vektra/mockery)
 - [**goda**: to show dependencies between packages](https://github.com/loov/goda)
