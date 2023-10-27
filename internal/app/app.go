@@ -43,11 +43,11 @@ func StartService() {
 		logger.Fatal().Err(err).Msg("error loading config")
 	}
 
-	_ = config
 	db, err := infrastructure.NewMySQLClient(config.DB)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("error connecting to db")
 	}
+	defer db.Close()
 
 	// bookstore
 	bsRepositories := repositories.NewBookstoreRepository(&logger, db)

@@ -25,7 +25,7 @@ func NewMySQLClient(config *config.DB) (*mysql, error) {
 		return nil, err
 	}
 
-	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetConnMaxLifetime(time.Second * 30)
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 
@@ -38,13 +38,15 @@ func (m *mysql) Ping() error {
 	return m.client.Ping()
 }
 
+func (m *mysql) Close() error {
+	return m.client.Close()
+}
+
 func (m *mysql) Query(query string) (interfaces.DBRow, error) {
 	rows, err := m.client.Query(query)
 	if err != nil {
 		return nil, err
 	}
-
-	// defer rows.Close()
 
 	res := &row{
 		rows: rows,
@@ -67,4 +69,8 @@ func (r *row) Scan(dest ...interface{}) error {
 
 func (r *row) Next() bool {
 	return r.rows.Next()
+}
+
+func (r *row) Close() error {
+	return r.rows.Close()
 }

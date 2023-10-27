@@ -33,6 +33,7 @@ func (b *bookstore) ListBooks(ctx context.Context) ([]models.Book, error) {
 	if err != nil {
 		return books, err
 	}
+	defer res.Close()
 
 	for res.Next() {
 		var book models.Book
